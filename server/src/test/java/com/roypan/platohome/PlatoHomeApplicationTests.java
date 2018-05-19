@@ -24,21 +24,6 @@ public class PlatoHomeApplicationTests {
 	@Test
 	public void contextLoads() {
 		String baseUrl = "http://localhost:" + port;
-		addTest(baseUrl);
 	}
 
-	public void addTest(String baseUrl){
-		QuotationDo quotationDo = new QuotationDo();
-		quotationDo.setName(name);
-		quotationDo.setSex(1);
-		quotationDo.setCountry("China");
-		quotationDo.setDate(LocalDate.now());
-		quotationDo.setQuotation("Hello World!");
-		String result = restTemplate.postForObject(baseUrl + "/quotation/add",quotationDo,String.class);
-		System.out.println("add:" + result);
-	}
-
-	public void updateTest(String baseUrl){
-
-	}
 }

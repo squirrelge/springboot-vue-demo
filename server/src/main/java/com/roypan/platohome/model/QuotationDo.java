@@ -63,4 +63,17 @@ public class QuotationDo {
     public void setQuotation(String quotation) {
         this.quotation = quotation;
     }
+
+
+    @Override
+    public String toString() {
+        return "QuotationDo{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", sex=" + sex +
+                ", date=" + date +
+                ", country='" + country + '\'' +
+                ", quotation='" + quotation + '\'' +
+                '}';
+    }
 }

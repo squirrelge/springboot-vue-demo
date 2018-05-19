@@ -21,7 +21,7 @@ public class QuotationController {
 
     @ResponseBody
     @PostMapping(value = "/add")
-    public int addQuatation(@RequestBody QuotationDo quotationDo){
+    public int addQuotation(@RequestBody QuotationDo quotationDo){
         return quotationService.addQuotation(quotationDo);
     }
 
@@ -38,11 +38,19 @@ public class QuotationController {
     }
 
     @ResponseBody
-    @PostMapping(value = "/select")
-    public List<QuotationDo> findQuotations(@RequestParam(name = "pageNum",required = false,defaultValue = "1") int pageNum,
+    @PostMapping(value = "/selectParams")
+    public List<QuotationDo> findQuotationsParams(@RequestParam(name = "pageNum",required = false,defaultValue = "1") int pageNum,
                                             @RequestParam(name = "pageSize",required = false,defaultValue = "10") int pageSize,
                                             @RequestBody QuotationDo quotationDo){
         PageHelper.startPage(pageNum,pageSize);
         return quotationService.findQuotations(pageNum,pageSize,quotationDo);
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/select")
+    public List<QuotationDo> findQuotations(@RequestParam(name = "pageNum",required = false,defaultValue = "1") int pageNum,
+                                            @RequestParam(name = "pageSize",required = false,defaultValue = "10") int pageSize){
+        PageHelper.startPage(pageNum,pageSize);
+        return quotationService.findQuotations(pageNum,pageSize,null);
     }
 }
