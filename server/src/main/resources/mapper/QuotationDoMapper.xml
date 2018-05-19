@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roypan.platohome.dao.QuotationDoMapper">
+  <resultMap id="BaseResultMap" type="com.roypan.platohome.model.QuotationDo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="date" jdbcType="TIMESTAMP" property="date" />
+    <result column="country" jdbcType="VARCHAR" property="country" />
+    <result column="quotation" jdbcType="VARCHAR" property="quotation" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, sex, date, country, quotation
+  </sql>
+  <sql id="dynamic_condition">
+    <if test="id != null">
+      and id = #{id,jdbcType=INTEGER}
+    </if>
+    <if test="name != null">
+      and name like '%'||#{name,jdbcType=VARCHAR}||'%'
+    </if>
+    <if test="sex != null">
+      and sex = #{sex,jdbcType=INTEGER}
+    </if>
+    <if test="date != null">
+      <![CDATA[ and date >= to_date(#{date,jdbcType=TIMESTAMP},'yyyy-MM-dd')]]>
+    </if>
+    <if test="date != null">
+      <![CDATA[ and date <= to_date(#{date,jdbcType=TIMESTAMP},'yyyy-MM-dd')]]>
+    </if>
+    <if test="country != null">
+      and country like '%'||#{country,jdbcType=VARCHAR}||'%'
+    </if>
+    <if test="quotation != null">
+      and quotation like '%'||#{quotation,jdbcType=VARCHAR}||'%'
+    </if>
+  </sql>
+  <select id="selectByPage" parameterType="com.roypan.platohome.model.QuotationDo" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_quotation
+    where 1=1
+    <if test="_parameter != null" >
+      <include refid="dynamic_condition" />
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_quotation
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_quotation
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.roypan.platohome.model.QuotationDo">
+    insert into t_quotation (id, name, sex, 
+      date, country, quotation
+      )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, 
+      #{date,jdbcType=TIMESTAMP}, #{country,jdbcType=VARCHAR}, #{quotation,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.roypan.platohome.model.QuotationDo">
+    insert into t_quotation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="date != null">
+        date,
+      </if>
+      <if test="country != null">
+        country,
+      </if>
+      <if test="quotation != null">
+        quotation,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="date != null">
+        #{date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="country != null">
+        #{country,jdbcType=VARCHAR},
+      </if>
+      <if test="quotation != null">
+        #{quotation,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.roypan.platohome.model.QuotationDo">
+    update t_quotation
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="date != null">
+        date = #{date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="country != null">
+        country = #{country,jdbcType=VARCHAR},
+      </if>
+      <if test="quotation != null">
+        quotation = #{quotation,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.roypan.platohome.model.QuotationDo">
+    update t_quotation
+    set name = #{name,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      date = #{date,jdbcType=TIMESTAMP},
+      country = #{country,jdbcType=VARCHAR},
+      quotation = #{quotation,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

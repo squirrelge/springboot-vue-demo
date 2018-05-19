@@ -17,9 +17,9 @@ adapters.push(
                     name: Mock.Random.cname(),
                     sex: Mock.Random.integer(1,2),
                     'age|18-30': 1,
-                    date: Mock.Random.date(),
-                    country: Mock.mock('@country(true'),
-                    quotation: Mock.mock('@country(true'),
+                    date: Mock.Random.date('yyyy-MM-dd'),
+                    country: Mock.mock('@country(true)'),
+                    quotation: Mock.mock('@country(true)'),
                 })
                 result.rows.push(item)
             }
