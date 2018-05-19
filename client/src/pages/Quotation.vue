@@ -7,10 +7,10 @@
                     <el-input v-model="filters.query" placeholder="姓名/关键词"/>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" v-on:click="queryRows" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" v-on:click="handleQuery" icon="el-icon-search">查询</el-button>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" v-on:click="addRow" icon="el-icon-plus">添加</el-button>
+                    <el-button type="primary" v-on:click="handleAdd" icon="el-icon-plus">添加</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -47,11 +47,11 @@
                     <el-button
                     size="mini"
                     type="primary"
-                    @click="editRow(scope.$index,scope.row)">编辑</el-button>
+                    @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
                     <el-button
                     size="mini"
                     type="danger"
-                    @click="deleteRow(scope.$index,scope.row)">删除</el-button>
+                    @click="handleDelete(scope.$index,scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -60,10 +60,61 @@
             <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
+        <!--对话框-->
+        <el-dialog :title="form && form.id ? '编辑' : '新增' " :visible.sync="formVisible" :close-on-click-modal="false">
+            <el-form :model="form" label-width="100px" :rules="rules" ref="form">
+            <el-form-item label="姓名" prop="name">
+                <el-input v-model="form.name" />
+            </el-form-item>
+            <el-form-item label="性别" prop="sex">
+                <el-radio-group v-model="form.sex">
+                <el-radio :label="1">男</el-radio>
+                <el-radio :label="2">女</el-radio>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="添加日期" prop="date">
+                <el-date-picker
+                v-model="form.date"
+                type="date"
+                placeholder="选择日期">
+                </el-date-picker>
+            </el-form-item>
+            <el-form-item label="国家" prop="country">
+                <el-input v-model="form.country" />
+            </el-form-item>
+            <el-form-item label="语录" prop="quotation">
+                <el-input v-model="form.quotation" 
+                    type="textarea"
+                    :rows="2"
+                    placeholder="请输入内容"/>
+            </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+            <el-button @click.native="formVisible = false">取消</el-button>
+            <el-button type="primary" @click.native="handleSubmit" :loading="formLoading">提交</el-button>
+            </div>
+        </el-dialog>
     </section>
 </template>
 
 <script>
+const rules = {
+    name: [{
+        required: true,
+        message: '请输入姓名',
+        trigger: 'blur'
+    }],
+    sex: [{
+        required: true,
+        message: '请选择性别',
+        trigger: 'change'
+    }],
+    quotation: [{
+        required: true,
+        message: '请输入语录',
+        trigger: 'blur'
+    }],
+}
 let data = () => {
     return {
     //页码
@@ -80,17 +131,53 @@ let data = () => {
     pageLoading: false,
     //列表高度
     clientHeight: '100%',
-
+    //表单数据
+    form: {},
+    //验证规则
+    rules: rules,
+    //对话框隐藏状态
+    formVisible: false,
+    //表单提交状态
+    formLoading: false,
   }
 }
-let addRow = function(){
-
+let handleAdd = function(){
+    this.form = {}
+    this.formVisible = true
 }
-let eidtRow = function(index,row){
+let handleEdit = function(index,row){
     console.log(index,row);
+    //Object.assign是克隆row的值.如果修改了数据但没有保存，关闭窗口的时候，列表中的数据就不会被误修改
+    this.form = Object.assign({},row)
+    this.formVisible = true
 }
-let deleteRow = function(index,row){
+let handleDelete = function(index,row){
     console.log(index,row);
+    if(this.pageLoading)
+        return
+    this.$confirm('是否确定删除该记录？','提示',{
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(() => {
+        this.pageLoading = true
+        this.$axios.get('/api/quotation/delete?id=' + row.id).then(res => {
+            this.pageLoading = false
+            if(!res.data.success){
+                this.$message({
+                    type: 'error',
+                    message: res.data.message
+                })
+                return
+            }
+            this.$message({
+                type: 'success',
+                message: '删除成功!'
+            })
+            this.page = 1
+            this.getRows()
+        }).catch(e => this.pageLoading = false)
+    }).catch(e => {})
 }
 let getRows = function(){
     // this.rows = []
@@ -132,7 +219,7 @@ let getRows = function(){
         query: this.filters.query
     }
 
-    this.$axios.post('/api/quotation/loadPage',params).then(res => {
+    this.$axios.post('/api/quotation/select',params).then(res => {
         this.pageLoading = false
         if(!res.data || !res.data.rows)
             return
@@ -144,7 +231,7 @@ let getRows = function(){
     }).catch(e => this.pageLoading = false)
 }
 
-let queryRows = function() {
+let handleQuery = function() {
   this.page = 1
   this.getRows()
 }
@@ -153,27 +240,60 @@ let handleCurrentChange = function(val) {
   this.page = val
   this.getRows()
 }
+let handleSubmit = function() {
+    if(this.formLoading)
+        return
+    this.$refs.form.validate(valid => {
+        if(!valid)
+            return
+        this.formLoading = true
+
+        this.$axios.post('/api/quotation/save',this.form).then(res => {
+            this.formLoading = false
+            if(!res.data.success){
+                this.$message({
+                    showClose: true,
+                    message: res.data.message,
+                    type: 'error'
+                });
+                return
+            }
+            this.$message({
+                type: 'success',
+                message: '保存成功!'
+            })
+
+            this.page = 1
+            this.getRows()
+            this.formVisible = false
+        }).catch(e => this.formLoading = false)
+    })
+}
 
 let initHeight = function() {
   this.clientHeight = (document.documentElement.clientHeight - 258) + 'px'
 }
+
+
 export default {
     data: data,
     methods: {
         //增加
-        addRow,
+        handleAdd,
         //编辑
-        eidtRow,
+        handleEdit,
         //删除
-        deleteRow,
+        handleDelete,
         //查询
-        queryRows,
+        handleQuery,
         //页数改变
         handleCurrentChange,
         //获取分页
         getRows,
         //初始化高度
-        initHeight
+        initHeight,
+        //提交数据
+        handleSubmit
     },
     mounted: function() {
         window.addEventListener('resize', this.initHeight)

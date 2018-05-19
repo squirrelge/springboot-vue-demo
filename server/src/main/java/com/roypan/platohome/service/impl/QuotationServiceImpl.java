@@ -35,9 +35,9 @@ public class QuotationServiceImpl implements QuotationService{
     }
 
     @Override
-    public List<QuotationDo> findQuotations(int pageNum, int pageSize,QuotationDo quotationDo) {
+    public List<QuotationDo> findQuotations(int pageNum, int pageSize,String query) {
         PageHelper.startPage(pageNum,pageSize);
-        return quotationDoMapper.selectByPage(quotationDo);
+        return quotationDoMapper.selectByPage(query);
     }
 
     @Override

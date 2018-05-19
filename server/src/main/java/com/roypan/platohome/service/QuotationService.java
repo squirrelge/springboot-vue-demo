@@ -16,7 +16,7 @@ public interface QuotationService {
 
     public int deleteQuotation(int id);
 
-    public List<QuotationDo> findQuotations(int pageNum,int pageSize,QuotationDo quotationDo);
+    public List<QuotationDo> findQuotations(int pageNum,int pageSize,String query);
 
     public QuotationDo findQuotationById(int id);
 }

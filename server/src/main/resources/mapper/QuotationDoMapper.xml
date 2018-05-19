@@ -35,13 +35,13 @@
       and quotation like '%'||#{quotation,jdbcType=VARCHAR}||'%'
     </if>
   </sql>
-  <select id="selectByPage" parameterType="com.roypan.platohome.model.QuotationDo" resultMap="BaseResultMap">
+
+  <select id="selectByPage" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from t_quotation
-    where 1=1
-    <if test="_parameter != null" >
-      <include refid="dynamic_condition" />
+    <if test="_parameter != null">
+      where name like concat('%',#{query},'%') or quotation like concat('%',#{query},'%')
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">

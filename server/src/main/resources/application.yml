@@ -1,5 +1,5 @@
 server:
-      port: 8080
+      port: 18080
 
 spring:
       datasource:
@@ -39,3 +39,9 @@ pagehelper:
     supportMethodsArguments: true
     params: count=countSql
     returnPageInfo: check
+logging:
+  level:
+       com:
+          roypan:
+                platohome:
+                          dao: debug

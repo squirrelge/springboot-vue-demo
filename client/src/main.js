@@ -13,7 +13,7 @@ Vue.use(ElementUI)
 
 //开发模式开启mock.js
 if(process.env.NODE_ENV === 'development'){
-  require('./mock')
+  // require('./mock')s
 }
 import axios from 'axios'
 Vue.prototype.$axios = axios
